@@ -2,29 +2,37 @@ module Day1 where
 
 import Prelude
 
-import Control.Monad.Error.Class (try)
-import Data.Either (either)
-import Data.Maybe (Maybe(..))
+import Data.Array (catMaybes)
+import Data.Array.NonEmpty (fromArray, head, last)
+import Data.CodePoint.Unicode (decDigitToInt)
+import Data.Foldable (sum)
+import Data.Int (toNumber)
+import Data.Number.Format (toString)
+import Data.String (Pattern(..), split, toCodePointArray)
 import Effect (Effect)
 import Effect.Console (log)
 import Node.Encoding (Encoding(..))
-import Node.FS.Sync (readTextFile)
-import Node.Path (FilePath)
-import Partial.Unsafe (unsafeCrashWith)
-
-readTextFileSafe :: Encoding -> FilePath -> Effect (Maybe String)
-readTextFileSafe encoding =
-  readTextFile encoding
-    >>> try
-    >>> map (either (const Nothing) Just)
-
-unsafeFromJust :: forall a. Maybe a -> a
-unsafeFromJust maybeVal = case maybeVal of
-  Just x -> x
-  Nothing -> unsafeCrashWith ""
+import Utils (readTextFileSafe, unsafeFromJust)
 
 input :: Effect String
 input = readTextFileSafe UTF8 "./src/input-day1.txt" # map unsafeFromJust
 
+calibrationValueFromString :: String -> Number
+calibrationValueFromString = toCodePointArray
+  >>> (map decDigitToInt)
+  >>> catMaybes
+  >>> fromArray
+  >>> unsafeFromJust
+  >>> (\n -> head n * 10 + last n)
+  >>> toNumber
+
+transform :: String -> String
+transform = (split (Pattern "\n"))
+  >>> (map calibrationValueFromString)
+  >>> sum
+  >>> toString
+
 day1 :: Effect Unit
-day1 = input >>= log
+day1 = input
+  # map transform
+  >>= log
