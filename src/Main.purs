@@ -2,8 +2,15 @@ module Main where
 
 import Prelude
 
-import Day1 (day1)
+import Day1 (transform)
 import Effect (Effect)
+import Effect.Console (log)
+import Node.Encoding (Encoding(..))
+import Node.FS.Sync (readTextFile)
 
 main :: Effect Unit
-main = day1
+main =
+  "./src/input-day1.txt"
+    # readTextFile UTF8
+    # map transform
+    >>= log

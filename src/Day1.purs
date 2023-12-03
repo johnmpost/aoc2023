@@ -9,13 +9,7 @@ import Data.Foldable (sum)
 import Data.Int (toNumber)
 import Data.Number.Format (toString)
 import Data.String (Pattern(..), split, toCodePointArray)
-import Effect (Effect)
-import Effect.Console (log)
-import Node.Encoding (Encoding(..))
-import Utils (readTextFileSafe, unsafeFromJust)
-
-input :: Effect String
-input = readTextFileSafe UTF8 "./src/input-day1.txt" # map unsafeFromJust
+import Utils (unsafeFromJust)
 
 calibrationValueFromString :: String -> Number
 calibrationValueFromString = toCodePointArray
@@ -31,8 +25,3 @@ transform = (split (Pattern "\n"))
   >>> (map calibrationValueFromString)
   >>> sum
   >>> toString
-
-day1 :: Effect Unit
-day1 = input
-  # map transform
-  >>= log
