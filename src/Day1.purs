@@ -12,16 +12,18 @@ import Data.String (Pattern(..), split, toCodePointArray)
 import Utils (unsafeFromJust)
 
 calibrationValueFromString :: String -> Number
-calibrationValueFromString = toCodePointArray
-  >>> (map decDigitToInt)
-  >>> catMaybes
-  >>> fromArray
-  >>> unsafeFromJust
-  >>> (\n -> head n * 10 + last n)
-  >>> toNumber
+calibrationValueFromString =
+  toCodePointArray
+    >>> (map decDigitToInt)
+    >>> catMaybes
+    >>> fromArray
+    >>> unsafeFromJust
+    >>> (\n -> head n * 10 + last n)
+    >>> toNumber
 
 transform :: String -> String
-transform = (split (Pattern "\n"))
-  >>> (map calibrationValueFromString)
-  >>> sum
-  >>> toString
+transform =
+  (split (Pattern "\n"))
+    >>> (map calibrationValueFromString)
+    >>> sum
+    >>> toString
