@@ -7,9 +7,10 @@ import Data.Array.NonEmpty (fromArray, head, last)
 import Data.CodePoint.Unicode (decDigitToInt)
 import Data.Foldable (sum)
 import Data.Int (toNumber)
+import Data.Maybe (fromJust)
 import Data.Number.Format (toString)
 import Data.String (Pattern(..), split, toCodePointArray)
-import Utils (unsafeFromJust)
+import Partial.Unsafe (unsafePartial)
 
 calibrationValueFromString :: String -> Number
 calibrationValueFromString =
@@ -17,7 +18,7 @@ calibrationValueFromString =
     >>> (map decDigitToInt)
     >>> catMaybes
     >>> fromArray
-    >>> unsafeFromJust
+    >>> unsafePartial fromJust
     >>> (\n -> head n * 10 + last n)
     >>> toNumber
 

@@ -15,18 +15,15 @@ to generate this file without the comments in this block.
   [ "arrays"
   , "console"
   , "effect"
-  , "either"
   , "foldable-traversable"
   , "integers"
   , "maybe"
   , "node-buffer"
   , "node-fs"
-  , "node-path"
   , "numbers"
   , "partial"
   , "prelude"
   , "strings"
-  , "transformers"
   , "unicode"
   ]
 , packages = ./packages.dhall
