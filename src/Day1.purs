@@ -4,28 +4,25 @@ import Prelude
 
 import Control.Alternative ((<|>))
 import Data.Array (catMaybes)
-import Data.Array.NonEmpty (fromArray, head, last, toArray)
+import Data.Array.NonEmpty (fromArray, head, last)
 import Data.CodePoint.Unicode (decDigitToInt)
 import Data.Foldable (sum)
 import Data.Int (fromString)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.String (Pattern(..), split, toCodePointArray)
 import Data.String.Regex (match)
-import Data.String.Regex.Flags (global)
+import Data.String.Regex.Flags (global, noFlags)
 import Data.String.Regex.Unsafe (unsafeRegex)
 import Partial.Unsafe (unsafePartial)
 
-calibrationValueFromString :: String -> Int
-calibrationValueFromString =
+part1GetCalibration :: String -> Int
+part1GetCalibration =
   toCodePointArray
     >>> (map decDigitToInt)
     >>> catMaybes
     >>> fromArray
     >>> unsafePartial fromJust
     >>> (\n -> head n * 10 + last n)
-
-digitStrToInt :: String -> Maybe Int
-digitStrToInt = fromString
 
 wordToInt :: String -> Maybe Int
 wordToInt "one" = Just 1
@@ -39,25 +36,29 @@ wordToInt "eight" = Just 8
 wordToInt "nine" = Just 9
 wordToInt _ = Nothing
 
-parseNumber :: String -> Int
-parseNumber str =
-  digitStrToInt str <|> wordToInt str
+strDigitOrWordToInt :: String -> Int
+strDigitOrWordToInt str =
+  fromString str <|> wordToInt str
     # unsafePartial fromJust
 
-calibration2 :: String -> Int
-calibration2 =
-  match (unsafeRegex "(one|two|three|four|five|six|seven|eight|nine|\\d)" global)
+getOneMatch :: String -> String -> String
+getOneMatch pattern =
+  match (unsafeRegex pattern noFlags)
     >>> unsafePartial fromJust
-    >>> toArray
-    >>> catMaybes
-    >>> map parseNumber
-    >>> fromArray
+    >>> head
     >>> unsafePartial fromJust
-    >>> (\n -> head n * 10 + last n)
+
+part2GetCalibration :: String -> Int
+part2GetCalibration line = do
+  let firstPattern = "([1-9]|one|two|three|four|five|six|seven|eight|nine)"
+  let lastPattern = "(?<=([1-9]|one|two|three|four|five|six|seven|eight|nine))$"
+  let firstMatch = getOneMatch firstPattern line # strDigitOrWordToInt
+  let lastMatch = getOneMatch lastPattern line # strDigitOrWordToInt
+  firstMatch * 10 + lastMatch
 
 transform :: String -> String
 transform =
   (split (Pattern "\n"))
-    >>> (map calibration2)
+    >>> (map part2GetCalibration)
     >>> sum
     >>> show
