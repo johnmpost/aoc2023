@@ -11,7 +11,7 @@ import Data.Int (fromString)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.String (Pattern(..), split, toCodePointArray)
 import Data.String.Regex (match)
-import Data.String.Regex.Flags (global, noFlags)
+import Data.String.Regex.Flags (noFlags)
 import Data.String.Regex.Unsafe (unsafeRegex)
 import Partial.Unsafe (unsafePartial)
 
