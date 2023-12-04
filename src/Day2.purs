@@ -70,12 +70,21 @@ unsafeFromRight (Left _) = unsafeCrashWith "was not Right"
 parseGame :: String -> Game
 parseGame = flip runParser game >>> unsafeFromRight
 
+-- transform :: String -> String
+-- transform =
+--   (split (Pattern "\n"))
+--     >>> (map $ parseGame)
+--     >>> (map \g -> { id: g.id, maxes: (roundsMaxes g.rounds) })
+--     >>> filter (isPossible { red: 12, green: 13, blue: 14 })
+--     >>> (map _.id)
+--     >>> sum
+--     >>> show
+
 transform :: String -> String
 transform =
   (split (Pattern "\n"))
     >>> (map $ parseGame)
-    >>> (map \g -> { id: g.id, maxes: (roundsMaxes g.rounds) })
-    >>> filter (isPossible { red: 12, green: 13, blue: 14 })
-    >>> (map _.id)
+    >>> (map \g -> roundsMaxes g.rounds)
+    >>> (map \maxes -> maxes.red * maxes.blue * maxes.green)
     >>> sum
     >>> show
