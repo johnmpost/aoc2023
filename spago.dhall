@@ -26,6 +26,7 @@ to generate this file without the comments in this block.
   , "partial"
   , "prelude"
   , "strings"
+  , "tuples"
   , "unicode"
   ]
 , packages = ./packages.dhall
