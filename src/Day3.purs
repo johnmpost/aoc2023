@@ -2,19 +2,17 @@ module Day3 where
 
 import Prelude
 
-import Data.Array (any, catMaybes, concat, elem, filter, mapWithIndex, range)
+import Data.Array (any, concat, elem, filter, mapWithIndex, range)
 import Data.Array.NonEmpty (NonEmptyArray, toArray)
 import Data.CodePoint.Unicode (isDecDigit)
 import Data.Foldable (sum)
 import Data.Int (fromString)
 import Data.Maybe (Maybe, fromJust, fromMaybe)
-import Data.String (Pattern(..), codePointFromChar, indexOf, length, split)
+import Data.String (Pattern(..), codePointFromChar, length, split)
 import Data.String.CodeUnits (toCharArray)
-import Data.String.Regex (match)
-import Data.String.Regex.Flags (global)
-import Data.String.Regex.Unsafe (unsafeRegex)
 import Data.Tuple (Tuple(..), fst, snd)
 import Partial.Unsafe (unsafePartial)
+import Utils (matchAll)
 
 type Coordinate = { x :: Int, y :: Int }
 
@@ -42,17 +40,10 @@ convertMaybeNEA maybeNEA = fromMaybe [] (toArray <$> maybeNEA)
 getNumbersInLine :: String -> Array (Tuple Int Int)
 getNumbersInLine line =
   line
-    # match (unsafeRegex "[0-9]+" global)
-    # convertMaybeNEA
-    # catMaybes
-    # map
-        ( \numStr -> Tuple
-            (fromString numStr # unsafePartial fromJust)
-            (indexOf (Pattern numStr) line # unsafePartial fromJust)
-        -- welp, this indexOf will of course find the *first*
-        -- instance in the line, not always the correct one
-        -- going to have to make an FFI for js's matchall
-        )
+    # matchAll "[0-9]+"
+    # map \x -> Tuple
+        (x.match # fromString # unsafePartial fromJust)
+        (x.index)
 
 getNumbers :: Array String -> Array Number'
 getNumbers =
@@ -95,4 +86,3 @@ transform =
       # sum
       # show
       # pure
-
