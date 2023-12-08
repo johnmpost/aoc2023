@@ -2,19 +2,15 @@ module Day4 where
 
 import Prelude
 
-import Data.Array (fromFoldable, (!!))
-import Data.Array as A
-import Data.Foldable (length)
+import Data.Foldable (length, sum)
 import Data.Int (pow)
-import Data.List (List(..), intersect, range, (:))
+import Data.List (List(..), fromFoldable, intersect, reverse, take, (:))
 import Data.List.NonEmpty (toList)
-import Data.Maybe (fromJust)
 import Data.String (Pattern(..), split)
 import Parsing (Parser)
 import Parsing.Combinators (many1Till, sepBy1)
 import Parsing.String (string)
 import Parsing.String.Basic (intDecimal, whiteSpace)
-import Partial.Unsafe (unsafePartial)
 import Utils (unsafeRunParser)
 
 type Scratchcard = { cardNo :: Int, winningNums :: List Int, haveNums :: List Int }
@@ -51,25 +47,21 @@ scratchcardToPoints { winningNums, haveNums } =
 --     >>> sum
 --     >>> show
 
-processPile :: Array Int -> List Int -> Int -> Int
-processPile matchesPerCard pile processedCount =
-  case pile of
-    (Nil) -> processedCount
-    (cardNo : remCards) ->
-      let
-        numMatches = matchesPerCard !! cardNo # unsafePartial fromJust
-        newInts = if numMatches == 0 then (Nil) else range (cardNo + 1) (cardNo + numMatches)
-        newPile = remCards <> newInts
-      in
-        processPile matchesPerCard newPile (processedCount + 1)
+getTotalCards :: List Int -> List Int
+getTotalCards = go (Nil)
+  where
+  go acc (Nil) = reverse acc
+  go acc (x : xs) = go (newVal : acc) xs
+    where
+    newVal = 1 + sum (take x acc)
 
 transform :: String -> String
-transform = do
-  cardsByIndex <-
-    (split (Pattern "\n"))
-      >>> map (unsafeRunParser scratchcard)
-      >>> map toNumMatches
-      >>> fromFoldable
-  let initialPile = range 0 (A.length cardsByIndex - 1)
-  let totalNumCards = processPile cardsByIndex initialPile 0
-  pure $ show totalNumCards
+transform =
+  (split (Pattern "\n"))
+    >>> map (unsafeRunParser scratchcard)
+    >>> map toNumMatches
+    >>> fromFoldable
+    >>> reverse
+    >>> getTotalCards
+    >>> sum
+    >>> show
