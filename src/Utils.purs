@@ -14,9 +14,9 @@ foreign import matchAll
   -> String
   -> Array { match :: String, index :: Int }
 
-unsafeFromRight :: forall a b. Either a b -> b
+unsafeFromRight :: forall t7 a8. Show a8 => Show t7 => Either a8 t7 -> t7
 unsafeFromRight (Right value) = value
-unsafeFromRight (Left _) = unsafeCrashWith "used unsafeFromRight on a Left"
+unsafeFromRight e = unsafeCrashWith $ show e
 
-unsafeRunParser :: forall a b. ParserT a Identity b -> a -> b
+unsafeRunParser :: forall b17 d19. Show d19 => ParserT b17 Identity d19 -> b17 -> d19
 unsafeRunParser parser = flip runParser parser >>> unsafeFromRight
